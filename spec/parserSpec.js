@@ -94,6 +94,21 @@ describe('JSON Parser', function () {
                 expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
             });
         });
+        describe('supporting inner objects', function () {
+            it('value is empty object', function () {
+                var obj = {"obj": {}};
+                expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
+            });
+            it('value is nested object', function () {
+                var obj = {'obj': {'innerObj':{}}};
+                expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
+            });
+            it('value is simple object with key:val pair', function () {
+                var obj = {'obj': {'a': 123}};
+                expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
+            });
+        });
+
     });
 
     describe('multiple key:value pairs', function () {

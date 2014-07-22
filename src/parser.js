@@ -7,11 +7,11 @@ function Parser() {
 
 Parser.prototype.parse = function parse(str) {
     var tokenizer = new Tokenizer(str);
+    assertToken(TOKENS_TYPES.objectOpened, tokenizer.getNextToken());
     return parseObject(tokenizer);
 };
 
 function parseObject(tokenizer) {
-    assertToken(TOKENS_TYPES.objectOpened, tokenizer.getNextToken());
     var retObj = {};
     while (!isNextTokenClosedObject(tokenizer) && tokenizer.hasNext()) {
         var keyStr = tokenizer.getNextToken().value.toString();
@@ -27,7 +27,12 @@ function parseObject(tokenizer) {
 
 function parseValue(tokenizer) {
     assertToken(TOKENS_TYPES.separator, tokenizer.getNextToken());
-    var retVal = tokenizer.getNextToken().value;
+    var token = tokenizer.getNextToken().value, retVal;
+    if (TOKENS_TYPES.objectOpened.test(token)) {
+        retVal = parseObject(tokenizer);
+    } else {
+        retVal = token;
+    }
     if (tokenizer.hasNext() && !isNextTokenClosedObject(tokenizer)) {
         assertToken(TOKENS_TYPES.comma, tokenizer.getNextToken());
     }
@@ -70,10 +75,10 @@ var TOKENS_TYPES = {
     'string': new TokenType(/^"[^"]*"/, function (str) {
         return str.slice(1, str.length - 1);
     }),
-    'boolean': new TokenType(/^(true|false)/, function(str){
+    'boolean': new TokenType(/^(true|false)/, function (str) {
         return str == "true";
     }),
-    'null': new TokenType(/^null/, function(){
+    'null': new TokenType(/^null/, function () {
         return null;
     })
 };
