@@ -4,7 +4,6 @@
 function Parser() {
 }
 
-
 function safeRemoveQuatations(str) {
     var match = /^\s*"([^"]*)"\s*$/.exec(str);
     return match ? match[1] : str;

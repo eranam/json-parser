@@ -52,6 +52,26 @@ describe('JSON Parser', function () {
         });
     });
 
+    describe('parsing mixed types - acceptance tests', function () {
+        it('long object with multiple value types', function () {
+            var obj = {
+                'a': null,
+                'b': 123,
+                'c': 12.5,
+                'd': -5,
+                'e': true,
+                'f': false,
+                'g': '!@#$%^&*()_+/;><?. eran amar '
+            };
+            expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
+        });
+        it('long object with multiple value types', function () {
+            var obj = { 'a': null};
+            var str = '{"a":"first value", "a": -8.99, "a": null}';
+            expect(parser.parse(str)).toEqual(obj);
+        });
+    });
+
     describe('invalid input string', function () {
         it('trivial object missing open bracket', function () {
             expect(function () {
