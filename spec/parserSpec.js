@@ -3,7 +3,7 @@ describe('JSON Parser', function () {
     beforeEach(function () {
         parser = new Parser();
     });
-    describe('parsing single key:val pair', function () {
+    describe('parsing numbers', function () {
         it('parsing an empty object', function () {
             expect(parser.parse('{}')).toEqual({});
         });
@@ -18,7 +18,13 @@ describe('JSON Parser', function () {
             var obj = {'a': 1, 'b': 2, 'c': 3};
             expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
         });
+    });
 
+    describe('parsing strings', function (){
+        it('parsing single pair', function (){
+            var obj = {'a': 'eran amar'};
+            expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
+        });
     });
 
 });

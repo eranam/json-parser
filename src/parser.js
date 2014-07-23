@@ -3,6 +3,10 @@
  */
 function Parser() {
 }
+function safeRemoveQuatations(str){
+    var match = /^\s*"([^"]*)"\s*$/.exec(str);
+    return match ? match[1] : str;
+}
 
 Parser.prototype.parse = function parse(str) {
     var retObj = {};
@@ -11,11 +15,8 @@ Parser.prototype.parse = function parse(str) {
         while(str.length) {
             var block = str.split(',', 2)[0];
             var tokensArr = block.split(':', 2);
-            var key = tokensArr[0].trim(),
-                val = tokensArr[1].trim();
-            if (/^"[^"]*"$/.test(key)) {
-                key = key.slice(1, key.length - 1);
-            }
+            var key = safeRemoveQuatations(tokensArr[0]),
+                val = safeRemoveQuatations(tokensArr[1]);
             if (!isNaN(val)) {
                 val = Number(val);
             }
