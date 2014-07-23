@@ -37,5 +37,15 @@ describe('JSON Parser', function () {
             var obj = {'a': true};
             expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
         });
+        it('value is false', function () {
+            var obj = {'a': false};
+            expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
+        });
+    });
+    describe('parsing null', function () {
+        it('value is null', function () {
+            var obj = {'a': null};
+            expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
+        });
     });
 });

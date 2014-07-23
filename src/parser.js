@@ -21,6 +21,8 @@ Parser.prototype.parse = function parse(str) {
                 val = Number(val);
             } else if (/^(true|false)/.test(val)){
                 val = (val == 'true');
+            } else if(/^null/.test(val)){
+                val = null;
             }
             retObj[key] = val;
             str = str.slice(block.length+1).trim();
