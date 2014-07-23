@@ -3,6 +3,7 @@ describe('JSON Parser', function () {
     beforeEach(function () {
         parser = new Parser();
     });
+
     describe('parsing numbers', function () {
         it('parsing an empty object', function () {
             expect(parser.parse('{}')).toEqual({});
@@ -32,6 +33,7 @@ describe('JSON Parser', function () {
             expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
         });
     });
+
     describe('parsing boolean', function () {
         it('value is true', function () {
             var obj = {'a': true};
@@ -42,10 +44,19 @@ describe('JSON Parser', function () {
             expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
         });
     });
+
     describe('parsing null', function () {
         it('value is null', function () {
             var obj = {'a': null};
             expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
+        });
+    });
+
+    describe('invalid input string', function () {
+        it('trivial object missing open bracket', function () {
+            expect(function () {
+                parser.parse('}');
+            }).toThrow("missing token: {");
         });
     });
 });

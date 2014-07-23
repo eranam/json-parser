@@ -52,6 +52,9 @@ function extractValueFromString(data) {
 
 Parser.prototype.parse = function parse(str) {
     var retObj = {};
+    if (str.charAt(0) !== '{'){
+        throw new Error('missing token: {')
+    }
     if (str.length > 2) {
         str = str.slice(1, str.length - 1);
         while (str.length) {
