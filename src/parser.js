@@ -41,39 +41,65 @@ var CONVERTER_FUNCS = {
     }
 };
 
-function extractValueFromString(str) {
+function parseValueFromString(str) {
     for (var type in CONVERTER_FUNCS) {
         if (CONVERTER_FUNCS.hasOwnProperty(type) && CONVERTER_FUNCS[type].diagnoser(str)) {
             return CONVERTER_FUNCS[type].convertFunc(str);
 
         }
     }
-    return str;
+    throw new Error('unrecognized next token in: '+str);
 }
+
+function InputContainer(str){
+    this.str = str;
+}
+
+InputContainer.prototype.extractNextBlock = function extractNextBlock(){
+    var block = this.str.split(',', 2)[0];
+    this.str = this.str.slice(block.length + 1).trim();
+    return block;
+};
+
+InputContainer.prototype.peekFirstChar = function peekFirstChar(){
+    return this.str.charAt(0);
+};
+
+InputContainer.prototype.removeFirstChar = function peekFirstChar(){
+    this.str = this.str.slice(1);
+};
+
+InputContainer.prototype.getLength = function getLength(){
+    return this.str.length;
+};
+
+InputContainer.prototype.pushToHead = function pushToHead(str){
+    this.str = str + this.str;
+};
+
 
 Parser.prototype.parse = function parse(str) {
     var retObj = {};
-    if (str.charAt(0) !== '{') {
+    var inputData = new InputContainer(str);
+    if (inputData.peekFirstChar() !== '{') {
         throw new Error('missing token: {')
     }
-    str = str.slice(1);
+    inputData.removeFirstChar();
 
-    while (str.length > 1) {
-        var block = str.split(',', 2)[0];
+    while (inputData.getLength() > 1) {
+        var block = inputData.extractNextBlock();
         var lastChar = block.charAt(block.length - 1);
-        str = str.slice(block.length + 1).trim();
         if (lastChar === '}') {
             block = block.slice(0, block.length - 1);
-            str = '}' + str;
+            inputData.pushToHead('}');
         }
         var tokensArr = block.split(':', 2);
         var key = safeRemoveQuatations(tokensArr[0]),
-            val = safeRemoveQuatations(tokensArr[1]);
-        retObj[key] = extractValueFromString(val);
-
+            val = parseValueFromString(tokensArr[1]);
+        retObj[key] = val;
     }
 
-    if (str.charAt(0) !== '}') {
+    if (inputData.peekFirstChar() !== '}') {
         throw new Error('missing token: }')
     }
     return retObj;
