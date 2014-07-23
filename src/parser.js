@@ -15,6 +15,7 @@ function parseObject(tokenizer) {
     var retObj = {};
     while (!isNextTokenClosedObject(tokenizer) && tokenizer.hasNext()) {
         var keyStr = tokenizer.getNextToken().value.toString();
+        assertToken(TOKENS_TYPES.separator, tokenizer.getNextToken());
         retObj[keyStr] = parseValue(tokenizer);
     }
     if (tokenizer.hasNext()) {
@@ -24,16 +25,35 @@ function parseObject(tokenizer) {
     }
     return retObj;
 }
+function isNextTokenClosedArray(tokenizer){
+    return TOKENS_TYPES.arrayClosed.test(tokenizer.str);
+}
+
+function parseArray(tokenizer) {
+    var retArr = [];
+    while(tokenizer.hasNext() && !isNextTokenClosedArray(tokenizer)){
+            retArr.push(parseValue(tokenizer));
+    }
+    if (tokenizer.hasNext()) {
+        assertToken(TOKENS_TYPES.arrayClosed, tokenizer.getNextToken());
+    } else {
+        throw new Error('Missing "]" at the end of array');
+    }
+    return retArr;
+}
 
 function parseValue(tokenizer) {
-    assertToken(TOKENS_TYPES.separator, tokenizer.getNextToken());
+
     var token = tokenizer.getNextToken().value, retVal;
     if (TOKENS_TYPES.objectOpened.test(token)) {
         retVal = parseObject(tokenizer);
-    } else {
+    } else if (TOKENS_TYPES.arrayOpened.test(token)){
+        retVal = parseArray(tokenizer);
+    }
+    else {
         retVal = token;
     }
-    if (tokenizer.hasNext() && !isNextTokenClosedObject(tokenizer)) {
+    if (tokenizer.hasNext() && !isNextTokenClosedObject(tokenizer) && !isNextTokenClosedArray(tokenizer)) {
         assertToken(TOKENS_TYPES.comma, tokenizer.getNextToken());
     }
     return retVal;
@@ -80,6 +100,12 @@ var TOKENS_TYPES = {
     }),
     'null': new TokenType(/^null/, function () {
         return null;
+    }),
+    'arrayOpened': new TokenType(/^\[/, function () {
+        return '[';
+    }),
+    'arrayClosed': new TokenType(/^\]/, function () {
+        return ']';
     })
 };
 
