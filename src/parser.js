@@ -11,6 +11,13 @@ function assertAndRemoveQuotations(str) {
     return CONVERTER_FUNCS.string.convertFunc(str);
 }
 
+var SPECIAL_CHARS = {
+    'comma': ',',
+    'seperator': ':',
+    'openObject': '{',
+    'closeObject': '}'
+};
+
 var CONVERTER_FUNCS = {
     'number': {
         'convertFunc': Number,
@@ -59,9 +66,9 @@ function InputContainer(str) {
 }
 
 InputContainer.prototype.extractNextBlock = function extractNextBlock() {
-    var block = this.str.split(',', 2)[0];
+    var block = this.str.split(SPECIAL_CHARS.comma, 2)[0];
     var hasFollowingComma = true;
-    if (block.charAt(block.length - 1) === '}') {
+    if (block.charAt(block.length - 1) === SPECIAL_CHARS.closeObject) {
         block = block.slice(0, block.length - 1);
         hasFollowingComma = false;
     }
@@ -88,12 +95,12 @@ InputContainer.prototype.assertNextCharThenPop = function assertNextCharThenPop(
 Parser.prototype.parse = function parse(str) {
     var retObj = {};
     var inputData = new InputContainer(str);
-    inputData.assertNextCharThenPop('{');
+    inputData.assertNextCharThenPop(SPECIAL_CHARS.openObject);
     while (inputData.getLength() > 1) {
         var block = inputData.extractNextBlock();
         var key = assertAndRemoveQuotations(block.key);
         retObj[key] = parseValue(block.value);
     }
-    inputData.assertNextCharThenPop('}');
+    inputData.assertNextCharThenPop(SPECIAL_CHARS.closeObject);
     return retObj;
 };
