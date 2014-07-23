@@ -67,7 +67,13 @@ describe('JSON Parser', function () {
         it('string value is not given with double quotes', function () {
             expect(function () {
                 parser.parse('{"a": \'eran\'}');
-            }).toThrow("unrecognized next token in:  'eran'");
+            }).toThrow("unrecognized next token in: 'eran'");
+        });
+
+        it('first pair ok, next pair missing double quotes for string', function () {
+            expect(function () {
+                parser.parse('{"OkValue": true, "BadValue": \'eran\'}');
+            }).toThrow("unrecognized next token in: 'eran'");
         });
     });
 });

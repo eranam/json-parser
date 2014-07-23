@@ -42,10 +42,10 @@ var CONVERTER_FUNCS = {
 };
 
 function parseValueFromString(str) {
+    str = str.trim();
     for (var type in CONVERTER_FUNCS) {
         if (CONVERTER_FUNCS.hasOwnProperty(type) && CONVERTER_FUNCS[type].diagnoser(str)) {
             return CONVERTER_FUNCS[type].convertFunc(str);
-
         }
     }
     throw new Error('unrecognized next token in: '+str);
