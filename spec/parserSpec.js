@@ -11,7 +11,11 @@ describe('JSON Parser', function () {
             expect(parser.parse('{ "a":  1}')).toEqual({'a': 1});
         });
         it('parsing an object with tow simple pairs', function (){
-            var obj = {'a':1, 'b':   2};
+            var obj = {'a':1, 'b': 2};
+            expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
+        });
+        it('parsing an object with 3 simple pairs', function (){
+            var obj = {'a': 1, 'b': 2, 'c': 3};
             expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
         });
 
