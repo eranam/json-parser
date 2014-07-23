@@ -58,5 +58,10 @@ describe('JSON Parser', function () {
                 parser.parse('}');
             }).toThrow("missing token: {");
         });
+        it('trivial object missing close bracket', function () {
+            expect(function () {
+                parser.parse('{');
+            }).toThrow("missing token: }");
+        });
     });
 });

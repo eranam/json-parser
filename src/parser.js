@@ -4,6 +4,7 @@
 function Parser() {
 }
 
+
 function safeRemoveQuatations(str) {
     var match = /^\s*"([^"]*)"\s*$/.exec(str);
     return match ? match[1] : str;
@@ -55,16 +56,28 @@ Parser.prototype.parse = function parse(str) {
     if (str.charAt(0) !== '{'){
         throw new Error('missing token: {')
     }
+    str = str.slice(1);
     if (str.length > 2) {
-        str = str.slice(1, str.length - 1);
-        while (str.length) {
+        while (str.length > 1) {
             var block = str.split(',', 2)[0];
+            var lastChar = block.charAt(block.length - 1);
+            console.log(block);
+            if (lastChar === '}'){
+                block = block.slice(0, block.length -1);
+                str = '1'+str;
+                console.log("CUTTING: "+block);
+            } else if (lastChar === ','){
+
+            }
             var tokensArr = block.split(':', 2);
             var key = safeRemoveQuatations(tokensArr[0]),
                 val = safeRemoveQuatations(tokensArr[1]);
             retObj[key] = extractValueFromString(val);
-            str = str.slice(block.length + 1).trim();
+            str = str.slice(block.length+1).trim();
         }
+    }
+    if (str.charAt(0) !== '}'){
+        throw new Error('missing token: }')
     }
     return retObj;
 };
