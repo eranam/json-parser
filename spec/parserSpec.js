@@ -101,4 +101,11 @@ describe('JSON Parser', function () {
             }).toThrow("Missing double quotations in next token: badKey");
         });
     });
+    describe('parsing arrays', function () {
+
+        it('parsing empty array', function () {
+            var obj = {'a': []};
+            expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
+        });
+    });
 });
