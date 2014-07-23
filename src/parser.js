@@ -4,5 +4,5 @@
 function Parser(){}
 
 Parser.prototype.parse = function parse() {
-
+    return {};
 };
