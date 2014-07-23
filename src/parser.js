@@ -47,59 +47,60 @@ function parseValueFromString(str) {
             return CONVERTER_FUNCS[type].convertFunc(str);
         }
     }
-    throw new Error('unrecognized next token in: '+str);
+    throw new Error('unrecognized next token in: ' + str);
 }
 
-function InputContainer(str){
+function InputContainer(str) {
     this.str = str;
 }
 
-InputContainer.prototype.extractNextBlock = function extractNextBlock(){
+InputContainer.prototype.extractNextBlock = function extractNextBlock() {
     var block = this.str.split(',', 2)[0];
-    this.str = this.str.slice(block.length + 1).trim();
+    var hasFollowingComma = true;
+    if (block.charAt(block.length-1) === '}'){
+        block = block.slice(0, block.length - 1);
+        hasFollowingComma = false;
+    }
+    var removedChars = hasFollowingComma? block.length+1 : block.length;
+    this.str = this.str.slice(removedChars).trim();
     return block;
 };
 
-InputContainer.prototype.peekFirstChar = function peekFirstChar(){
+InputContainer.prototype.peekFirstChar = function peekFirstChar() {
     return this.str.charAt(0);
 };
 
-InputContainer.prototype.removeFirstChar = function peekFirstChar(){
+InputContainer.prototype.removeFirstChar = function peekFirstChar() {
     this.str = this.str.slice(1);
 };
 
-InputContainer.prototype.getLength = function getLength(){
+InputContainer.prototype.getLength = function getLength() {
     return this.str.length;
 };
 
-InputContainer.prototype.pushToHead = function pushToHead(str){
+InputContainer.prototype.pushToHead = function pushToHead(str) {
     this.str = str + this.str;
 };
-
+InputContainer.prototype.assertNextCharThenPop = function assertNextCharThenPop(expectedToken) {
+    if (this.peekFirstChar() !== expectedToken) {
+        throw new Error('missing token: '+ expectedToken);
+    }
+    this.removeFirstChar();
+};
 
 Parser.prototype.parse = function parse(str) {
     var retObj = {};
     var inputData = new InputContainer(str);
-    if (inputData.peekFirstChar() !== '{') {
-        throw new Error('missing token: {')
-    }
-    inputData.removeFirstChar();
+    inputData.assertNextCharThenPop('{');
 
     while (inputData.getLength() > 1) {
         var block = inputData.extractNextBlock();
-        var lastChar = block.charAt(block.length - 1);
-        if (lastChar === '}') {
-            block = block.slice(0, block.length - 1);
-            inputData.pushToHead('}');
-        }
         var tokensArr = block.split(':', 2);
         var key = safeRemoveQuatations(tokensArr[0]),
             val = parseValueFromString(tokensArr[1]);
         retObj[key] = val;
     }
 
-    if (inputData.peekFirstChar() !== '}') {
-        throw new Error('missing token: }')
-    }
+    inputData.assertNextCharThenPop('}');
     return retObj;
 };
