@@ -41,42 +41,39 @@ var CONVERTER_FUNCS = {
     }
 };
 
-function extractValueFromString(data) {
+function extractValueFromString(str) {
     for (var type in CONVERTER_FUNCS) {
-        if (CONVERTER_FUNCS.hasOwnProperty(type) && CONVERTER_FUNCS[type].diagnoser(data)) {
-            return CONVERTER_FUNCS[type].convertFunc(data);
+        if (CONVERTER_FUNCS.hasOwnProperty(type) && CONVERTER_FUNCS[type].diagnoser(str)) {
+            return CONVERTER_FUNCS[type].convertFunc(str);
 
         }
     }
-    return data;
+    return str;
 }
 
 Parser.prototype.parse = function parse(str) {
     var retObj = {};
-    if (str.charAt(0) !== '{'){
+    if (str.charAt(0) !== '{') {
         throw new Error('missing token: {')
     }
     str = str.slice(1);
-    if (str.length > 2) {
-        while (str.length > 1) {
-            var block = str.split(',', 2)[0];
-            var lastChar = block.charAt(block.length - 1);
-            console.log(block);
-            if (lastChar === '}'){
-                block = block.slice(0, block.length -1);
-                str = '1'+str;
-                console.log("CUTTING: "+block);
-            } else if (lastChar === ','){
 
-            }
-            var tokensArr = block.split(':', 2);
-            var key = safeRemoveQuatations(tokensArr[0]),
-                val = safeRemoveQuatations(tokensArr[1]);
-            retObj[key] = extractValueFromString(val);
-            str = str.slice(block.length+1).trim();
+    while (str.length > 1) {
+        var block = str.split(',', 2)[0];
+        var lastChar = block.charAt(block.length - 1);
+        str = str.slice(block.length + 1).trim();
+        if (lastChar === '}') {
+            block = block.slice(0, block.length - 1);
+            str = '}' + str;
         }
+        var tokensArr = block.split(':', 2);
+        var key = safeRemoveQuatations(tokensArr[0]),
+            val = safeRemoveQuatations(tokensArr[1]);
+        retObj[key] = extractValueFromString(val);
+
     }
-    if (str.charAt(0) !== '}'){
+
+    if (str.charAt(0) !== '}') {
         throw new Error('missing token: }')
     }
     return retObj;
