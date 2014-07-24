@@ -180,3 +180,7 @@ Parser.prototype.parse = function parse(str) {
     assertTokens(tokenizer.extractNextToken(), SPECIAL_CHARS.openObject);
     return parseObject(tokenizer);
 };
+
+Parser.prototype.print = function print(obj){
+    return '{}';
+};

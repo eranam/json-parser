@@ -131,3 +131,13 @@ describe('JSON Parser', function () {
 
     });
 });
+describe('JSON Printer', function () {
+    var printer;
+    beforeEach(function () {
+        printer = new Parser();
+    });
+
+    it('prints empty object', function (){
+        expect(printer.print({})).toEqual('{}');
+    });
+});
