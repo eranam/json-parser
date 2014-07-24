@@ -164,4 +164,8 @@ describe('JSON Printer', function () {
         expect(printer.print({eran: [1, "w"]})).toEqual('{"eran":[1,"w"]}');
     });
 
+    it('prints object with an empty object as a value', function (){
+        expect(printer.print({eran: {}})).toEqual('{"eran":{}}');
+    });
+
 });

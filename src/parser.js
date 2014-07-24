@@ -218,6 +218,8 @@ function convertValueToString(value) {
             return '"' + value + '"';
         case 'Array':
             return convertArrayToString(value);
+        case 'Object':
+            return convertObjectToString(value);
         default :
             return String(value);
     }
