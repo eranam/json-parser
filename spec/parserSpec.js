@@ -107,5 +107,9 @@ describe('JSON Parser', function () {
             var obj = {'a': []};
             expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
         });
+        it('parsing array with single element', function () {
+            var obj = {'a': [1]};
+            expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
+        });
     });
 });

@@ -116,7 +116,11 @@ function parseValue(tokenizer){
     var token = tokenizer.extractNextToken(), retVal;
     if (isArrayToken(token)){
         retVal = [];
-        assertTokens(tokenizer.extractNextToken(), SPECIAL_CHARS.closeArray);
+        var nextToken = tokenizer.extractNextToken();
+        if (nextToken.value !== SPECIAL_CHARS.closeArray){
+            retVal.push(nextToken.value);
+            assertTokens(tokenizer.extractNextToken(), SPECIAL_CHARS.closeArray);
+        }
     } else {
         retVal = handleStringValueSafely(token);
     }
