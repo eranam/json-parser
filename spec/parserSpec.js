@@ -5,17 +5,17 @@ describe('JSON Parser', function () {
     });
 
     describe('parsing numbers', function () {
-        it('parsing an empty object', function () {
+        it('an empty object', function () {
             expect(parser.parse('{}')).toEqual({});
         });
-        it('parsing an object with one k:v pair', function () {
+        it('an object with one k:v pair', function () {
             expect(parser.parse('{ "a":  1}')).toEqual({'a': 1});
         });
-        it('parsing an object with tow simple pairs', function () {
+        it('an object with tow simple pairs', function () {
             var obj = {'a': 1, 'b': 2};
             expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
         });
-        it('parsing an object with many pairs', function () {
+        it('an object with many pairs', function () {
             var obj = {'a': 1, 'b': 2, 'c': 3};
             expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
         });
@@ -76,7 +76,7 @@ describe('JSON Parser', function () {
         it('trivial object missing open bracket', function () {
             expect(function () {
                 parser.parse('}');
-            }).toThrow("missing token: {");
+            }).toThrow("missing token: { instead of:}");
         });
         it('trivial object missing close bracket', function () {
             expect(function () {
@@ -103,17 +103,26 @@ describe('JSON Parser', function () {
     });
     describe('parsing arrays', function () {
 
-        it('parsing empty array', function () {
+        it('empty array', function () {
             var obj = {'a': []};
             expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
         });
-        it('parsing array with single element', function () {
+        it('array with single element', function () {
             var obj = {'a': [1]};
             expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
         });
-        it('parsing array with 2 elements', function () {
+        it('array with 2 elements', function () {
             var obj = {'a': [1, "erana"]};
             expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
         });
+    });
+
+    describe('parsing nested objects', function () {
+
+        it('array contains single element that is an empty array', function () {
+            var obj = {'a': [[]]};
+            expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
+        });
+
     });
 });
