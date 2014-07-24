@@ -120,15 +120,35 @@ describe('JSON Parser', function () {
     describe('parsing nested objects', function () {
 
         it('array contains single element that is an empty array', function () {
-            var obj = {'a': [[]]};
+            var obj = {'a': [
+                []
+            ]};
             expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
         });
 
         it('array contains single element that is an empty object', function () {
-            var obj = {'a': [{}]};
+            var obj = {'a': [
+                {}
+            ]};
             expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
         });
 
+    });
+    describe('acceptance test', function () {
+        it('stringify', function () {
+            var obj = {
+                1: 1.2,
+                'a': true,
+                '!@#$%^&*()_.': null,
+                '123': [0, -7, {
+                    "innerobj": [[],[[]], {"0":{}}],
+                    'another': {
+                        4: []
+                    }
+                }]
+            };
+            expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
+        });
     });
 });
 describe('JSON Printer', function () {
@@ -137,35 +157,50 @@ describe('JSON Printer', function () {
         printer = new Parser();
     });
 
-    it('prints empty object', function (){
+    it('prints empty object', function () {
         expect(printer.print({})).toEqual('{}');
     });
-    it('prints simple object int values', function (){
-        expect(printer.print({1:1})).toEqual('{"1":1}');
+    it('prints simple object int values', function () {
+        expect(printer.print({1: 1})).toEqual('{"1":1}');
     });
-    it('prints simple object with string value', function (){
+    it('prints simple object with string value', function () {
         expect(printer.print({eran: 'amar'})).toEqual('{"eran":"amar"}');
     });
-    it('prints object with multiple pairs', function (){
-        expect(printer.print({eran: 'amar', true:null})).toEqual('{"eran":"amar","true":null}');
+    it('prints object with multiple pairs', function () {
+        expect(printer.print({eran: 'amar', true: null})).toEqual('{"eran":"amar","true":null}');
     });
-    it('prints object with an empty array', function (){
+    it('prints object with an empty array', function () {
         expect(printer.print({eran: []})).toEqual('{"eran":[]}');
     });
-    it('prints object with a simple array', function (){
+    it('prints object with a simple array', function () {
         expect(printer.print({eran: [1]})).toEqual('{"eran":[1]}');
     });
-    it('prints object with array of multiple values (not strings)', function (){
+    it('prints object with array of multiple values (not strings)', function () {
         expect(printer.print({eran: [1, 2]})).toEqual('{"eran":[1,2]}');
     });
 
 
-    it('prints object with array of multiple values (with strings)', function (){
+    it('prints object with array of multiple values (with strings)', function () {
         expect(printer.print({eran: [1, "w"]})).toEqual('{"eran":[1,"w"]}');
     });
-
-    it('prints object with an empty object as a value', function (){
+    it('prints object with an empty object as a value', function () {
         expect(printer.print({eran: {}})).toEqual('{"eran":{}}');
     });
 
+    describe('acceptance test', function () {
+        it('stringify', function () {
+            var obj = {
+                1: 1.2,
+                'a': true,
+                '!@#$%^&*()_.': null,
+                '123': [0, -7, {
+                    "innerobj": [[],[[]], {"0":{}}],
+                    'another': {
+                        4: []
+                    }
+                }]
+            };
+            expect(printer.print(obj)).toEqual(JSON.stringify(obj));
+        });
+    });
 });
