@@ -4,11 +4,12 @@
 function Parser() {
 }
 
-function assertAndRemoveQuotations(str) {
+function assertStringAndRemoveQuotations(str) {
     if (!CONVERTER_FUNCS.string.diagnoser(str)) {
-        throw new Error('Missing double quotations in next token: ' + str);
+        throw new Error('Missing double quotations in token that should be string: ' + str);
     }
-    return CONVERTER_FUNCS.string.convertFunc(str);
+    var content = CONVERTER_FUNCS.string.extractFunc(str);
+    return content.slice(1, content.length-1);
 }
 
 var SPECIAL_CHARS = {
@@ -18,23 +19,36 @@ var SPECIAL_CHARS = {
     'closeObject': '}'
 };
 
+function startWith(wholeStr, prefix) {
+    return wholeStr.indexOf(prefix) == 0;
+}
+
+function findSpecialCharType(str) {
+    for (var type in SPECIAL_CHARS) {
+        if (SPECIAL_CHARS.hasOwnProperty(type) && startWith(str, SPECIAL_CHARS[type])) {
+            return type
+        }
+    }
+    return undefined;
+}
+
 var CONVERTER_FUNCS = {
     'number': {
-        'convertFunc': Number,
-        "diagnoser": function (val) {
+        "extractFunc": Number,
+        'diagnoser': function (val) {
             return !isNaN(val);
         }
     },
     'string': {
-        'convertFunc': function (val) {
-            return /^\s*"([^"]*)"\s*$/.exec(val)[1];
+        "extractFunc": function (val) {
+            return /^"([^"]*)"/.exec(val)[0];
         },
-        "diagnoser": function (val) {
+        'diagnoser': function (val) {
             return /^\s*"([^"]*)"\s*$/.test(val);
         }
     },
     'boolean': {
-        'convertFunc': function (val) {
+        "extractFunc": function (val) {
             return val == 'true';
         },
         "diagnoser": function (val) {
@@ -42,20 +56,31 @@ var CONVERTER_FUNCS = {
         }
     },
     'null': {
-        'convertFunc': function () {
+        "extractFunc": function () {
             return null;
         },
         "diagnoser": function (val) {
             return /^null/.test(val)
         }
+    },
+    'specialChar': {
+        "extractFunc": function (val) {
+            var type = findSpecialCharType(val);
+            return SPECIAL_CHARS[type];
+        },
+        'diagnoser': function (val) {
+            return !!findSpecialCharType(val)
+        }
     }
 };
 
-function parseValue(str) {
-    str = str.trim();
+function parseToken(str) {
     for (var type in CONVERTER_FUNCS) {
         if (CONVERTER_FUNCS.hasOwnProperty(type) && CONVERTER_FUNCS[type].diagnoser(str)) {
-            return CONVERTER_FUNCS[type].convertFunc(str);
+            return {
+                'type': type,
+                'value':CONVERTER_FUNCS[type].extractFunc(str)
+            };
         }
     }
     throw new Error('unrecognized next token in: ' + str);
@@ -64,6 +89,12 @@ function parseValue(str) {
 function InputContainer(str) {
     this.str = str;
 }
+
+InputContainer.prototype.extractNextToken = function extractNextToken() {
+    var match = parseToken(this.str);
+    this.str = this.str.slice(match.value.length).trim();
+    return match;
+};
 
 InputContainer.prototype.extractNextBlock = function extractNextBlock() {
     var block = this.str.split(SPECIAL_CHARS.comma, 2)[0];
@@ -85,22 +116,26 @@ InputContainer.prototype.getLength = function getLength() {
     return this.str.length;
 };
 
-InputContainer.prototype.assertNextCharThenPop = function assertNextCharThenPop(expectedToken) {
-    if (this.str.charAt(0) !== expectedToken) {
+InputContainer.prototype.assertNextTokenThenPop = function assertNextCharThenPop(expectedToken) {
+    var nextToken = this.extractNextToken();
+    if (nextToken.value !== expectedToken) {
         throw new Error('missing token: ' + expectedToken);
     }
-    this.str = this.str.slice(1);
 };
 
 Parser.prototype.parse = function parse(str) {
     var retObj = {};
     var inputData = new InputContainer(str);
-    inputData.assertNextCharThenPop(SPECIAL_CHARS.openObject);
+    inputData.assertNextTokenThenPop(SPECIAL_CHARS.openObject);
     while (inputData.getLength() > 1) {
         var block = inputData.extractNextBlock();
-        var key = assertAndRemoveQuotations(block.key);
-        retObj[key] = parseValue(block.value);
+        var key = assertStringAndRemoveQuotations(block.key);
+        var val = parseToken(block.value);
+        if (val.type === 'string'){
+            val.value = assertStringAndRemoveQuotations(val.value);
+        }
+        retObj[key] = val.value;
     }
-    inputData.assertNextCharThenPop(SPECIAL_CHARS.closeObject);
+    inputData.assertNextTokenThenPop(SPECIAL_CHARS.closeObject);
     return retObj;
 };
