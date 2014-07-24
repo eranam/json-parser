@@ -182,5 +182,12 @@ Parser.prototype.parse = function parse(str) {
 };
 
 Parser.prototype.print = function print(obj){
-    return '{}';
+    var retStr = '{';
+    for (var prop in obj){
+        if (obj.hasOwnProperty(prop)){
+            retStr+= '"' + prop + '"' + ':' + obj[prop];
+        }
+    }
+    retStr += '}';
+    return retStr;
 };

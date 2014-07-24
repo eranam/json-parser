@@ -140,4 +140,7 @@ describe('JSON Printer', function () {
     it('prints empty object', function (){
         expect(printer.print({})).toEqual('{}');
     });
+    it('prints simple object', function (){
+        expect(printer.print({1:1})).toEqual('{"1":1}');
+    });
 });
