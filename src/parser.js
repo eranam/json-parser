@@ -101,28 +101,35 @@ function assertTokens(token, expectedValue) {
     }
 }
 
-function handleStringValueSafely(token) {
+function handleStringValueOfTokenSafely(token) {
     if (token.type === 'string') {
         token.value = assertStringAndRemoveQuotations(token.value);
     }
     return token.value;
 }
 
-function isArrayToken(token){
+function isOpenArrayToken(token){
     return token.value === SPECIAL_CHARS.openArray;
+}
+
+function isCloseArrayToken(token){
+    return token.value === SPECIAL_CHARS.closeArray;
 }
 
 function parseValue(tokenizer){
     var token = tokenizer.extractNextToken(), retVal;
-    if (isArrayToken(token)){
+    if (isOpenArrayToken(token)){
         retVal = [];
         var nextToken = tokenizer.extractNextToken();
-        if (nextToken.value !== SPECIAL_CHARS.closeArray){
-            retVal.push(nextToken.value);
-            assertTokens(tokenizer.extractNextToken(), SPECIAL_CHARS.closeArray);
+        while (! isCloseArrayToken(nextToken)){
+            retVal.push(handleStringValueOfTokenSafely(nextToken));
+            nextToken = tokenizer.extractNextToken();
+            if (nextToken.value === SPECIAL_CHARS.comma){
+                nextToken = tokenizer.extractNextToken();
+            }
         }
     } else {
-        retVal = handleStringValueSafely(token);
+        retVal = handleStringValueOfTokenSafely(token);
     }
     return retVal;
 }

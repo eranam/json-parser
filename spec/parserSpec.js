@@ -111,5 +111,9 @@ describe('JSON Parser', function () {
             var obj = {'a': [1]};
             expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
         });
+        it('parsing array with 2 elements', function () {
+            var obj = {'a': [1, "erana"]};
+            expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
+        });
     });
 });
