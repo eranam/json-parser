@@ -1,7 +1,7 @@
 /**
  * Created by Eyal_Sadeh on 7/22/14.
  */
-xdescribe("json parser", function() {
+describe("json parser", function() {
     var parser;
     beforeEach(function () {
         parser = new Parser();
