@@ -149,4 +149,8 @@ describe('JSON Printer', function () {
     it('prints object with multiple pairs', function (){
         expect(printer.print({eran: 'amar', true:null})).toEqual('{"eran":"amar","true":null}');
     });
+    it('prints object with an empty array', function (){
+        expect(printer.print({eran: []})).toEqual('{"eran":[]}');
+    });
+
 });

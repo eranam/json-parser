@@ -181,26 +181,35 @@ Parser.prototype.parse = function parse(str) {
     return parseObject(tokenizer);
 };
 
-function convertValueToString(value){
-    if (Object.prototype.toString.call(value) == '[object String]'){
-        return '"' + value + '"';
+function getClass(obj) {
+    var classStr = Object.prototype.toString.call(obj);
+    return classStr.slice(8, classStr.length - 1);
+}
+
+function convertValueToString(value) {
+    switch (getClass(value)) {
+        case 'String':
+            return '"' + value + '"';
+        case 'Array':
+            return '[]';
+        default :
+            return String(value);
     }
-    return String(value);
 }
 
-function endsWith(str, suffix){
-    return str.indexOf(suffix, str.length - suffix.length) !== -1 ;
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
-Parser.prototype.print = function print(obj){
+Parser.prototype.print = function print(obj) {
     var retStr = '{';
-    for (var prop in obj){
-        if (obj.hasOwnProperty(prop)){
-            retStr+= '"' + prop + '"' + ':' + convertValueToString(obj[prop]) + ',';
+    for (var prop in obj) {
+        if (obj.hasOwnProperty(prop)) {
+            retStr += '"' + prop + '"' + ':' + convertValueToString(obj[prop]) + ',';
         }
     }
-    if (endsWith(retStr, ',')){
-        retStr = retStr.slice(0, retStr.length-1);
+    if (endsWith(retStr, ',')) {
+        retStr = retStr.slice(0, retStr.length - 1);
     }
     retStr += '}';
     return retStr;
