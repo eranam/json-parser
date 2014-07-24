@@ -181,11 +181,18 @@ Parser.prototype.parse = function parse(str) {
     return parseObject(tokenizer);
 };
 
+function convertValueToString(value){
+    if (Object.prototype.toString.call(value) == '[object String]'){
+        return '"' + value + '"';
+    }
+    return String(value);
+}
+
 Parser.prototype.print = function print(obj){
     var retStr = '{';
     for (var prop in obj){
         if (obj.hasOwnProperty(prop)){
-            retStr+= '"' + prop + '"' + ':' + obj[prop];
+            retStr+= '"' + prop + '"' + ':' + convertValueToString(obj[prop]);
         }
     }
     retStr += '}';

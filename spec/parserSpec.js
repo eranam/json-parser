@@ -140,7 +140,10 @@ describe('JSON Printer', function () {
     it('prints empty object', function (){
         expect(printer.print({})).toEqual('{}');
     });
-    it('prints simple object', function (){
+    it('prints simple object int values', function (){
         expect(printer.print({1:1})).toEqual('{"1":1}');
+    });
+    it('prints simple object with string value', function (){
+        expect(printer.print({eran: 'amar'})).toEqual('{"eran":"amar"}');
     });
 });
