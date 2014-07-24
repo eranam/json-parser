@@ -155,5 +155,13 @@ describe('JSON Printer', function () {
     it('prints object with a simple array', function (){
         expect(printer.print({eran: [1]})).toEqual('{"eran":[1]}');
     });
+    it('prints object with array of multiple values (not strings)', function (){
+        expect(printer.print({eran: [1, 2]})).toEqual('{"eran":[1,2]}');
+    });
+
+
+    it('prints object with array of multiple values (with strings)', function (){
+        expect(printer.print({eran: [1, "w"]})).toEqual('{"eran":[1,"w"]}');
+    });
 
 });

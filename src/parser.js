@@ -186,12 +186,38 @@ function getClass(obj) {
     return classStr.slice(8, classStr.length - 1);
 }
 
+function stringifyObj(obj, convertFunc){
+    var retVal = '';
+    for (var prop in obj) {
+        if (obj.hasOwnProperty(prop)) {
+            retVal += convertFunc(prop, obj[prop]) + ',';
+        }
+    }
+    if (endsWith(retVal, ',')) {
+        retVal = retVal.slice(0, retVal.length - 1);
+    }
+    return retVal;
+}
+function convertObjectToString(obj){
+    function objPrintFuc(key, value){
+        return '"' + key + '"' + ':' + convertValueToString(value);
+    }
+    return '{' + stringifyObj(obj, objPrintFuc) + '}';
+}
+
+function convertArrayToString(arr){
+    function arrPrintFunc(key, value){
+        return convertValueToString(value);
+    }
+    return '[' + stringifyObj(arr, arrPrintFunc) + ']';
+}
+
 function convertValueToString(value) {
     switch (getClass(value)) {
         case 'String':
             return '"' + value + '"';
         case 'Array':
-            return '[' + value + ']';
+            return convertArrayToString(value);
         default :
             return String(value);
     }
@@ -202,15 +228,5 @@ function endsWith(str, suffix) {
 }
 
 Parser.prototype.print = function print(obj) {
-    var retStr = '{';
-    for (var prop in obj) {
-        if (obj.hasOwnProperty(prop)) {
-            retStr += '"' + prop + '"' + ':' + convertValueToString(obj[prop]) + ',';
-        }
-    }
-    if (endsWith(retStr, ',')) {
-        retStr = retStr.slice(0, retStr.length - 1);
-    }
-    retStr += '}';
-    return retStr;
+    return convertObjectToString(obj);
 };
