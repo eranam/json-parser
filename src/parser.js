@@ -16,7 +16,9 @@ var SPECIAL_CHARS = {
     'comma': ',',
     'seperator': ':',
     'openObject': '{',
-    'closeObject': '}'
+    'closeObject': '}',
+    'openArray': '[',
+    'closeArray': ']'
 };
 
 function startWith(wholeStr, prefix) {
@@ -103,6 +105,22 @@ function handleStringValueSafely(token) {
     if (token.type === 'string') {
         token.value = assertStringAndRemoveQuotations(token.value);
     }
+    return token.value;
+}
+
+function isArrayToken(token){
+    return token.value === SPECIAL_CHARS.openArray;
+}
+
+function parseValue(tokenizer){
+    var token = tokenizer.extractNextToken(), retVal;
+    if (isArrayToken(token)){
+        retVal = [];
+        assertTokens(tokenizer.extractNextToken(), SPECIAL_CHARS.closeArray);
+    } else {
+        retVal = handleStringValueSafely(token);
+    }
+    return retVal;
 }
 
 function parseObject(tokenizer){
@@ -111,9 +129,7 @@ function parseObject(tokenizer){
     while (tokenizer.getLength() > 1) {
         var keyStrWithoutQuotations = assertStringAndRemoveQuotations(tokenizer.extractNextToken().value);
         assertTokens(tokenizer.extractNextToken(), SPECIAL_CHARS.seperator);
-        var valToken = tokenizer.extractNextToken();
-        handleStringValueSafely(valToken);
-        retObj[keyStrWithoutQuotations] = valToken.value;
+        retObj[keyStrWithoutQuotations] = parseValue(tokenizer);
         if (tokenizer.getLength() > 1) {
             assertTokens(tokenizer.extractNextToken(), SPECIAL_CHARS.comma);
         }

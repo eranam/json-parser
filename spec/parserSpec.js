@@ -103,7 +103,7 @@ describe('JSON Parser', function () {
     });
     describe('parsing arrays', function () {
 
-        xit('parsing empty array', function () {
+        it('parsing empty array', function () {
             var obj = {'a': []};
             expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
         });
