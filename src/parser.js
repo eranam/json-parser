@@ -188,12 +188,19 @@ function convertValueToString(value){
     return String(value);
 }
 
+function endsWith(str, suffix){
+    return str.indexOf(suffix, str.length - suffix.length) !== -1 ;
+}
+
 Parser.prototype.print = function print(obj){
     var retStr = '{';
     for (var prop in obj){
         if (obj.hasOwnProperty(prop)){
-            retStr+= '"' + prop + '"' + ':' + convertValueToString(obj[prop]);
+            retStr+= '"' + prop + '"' + ':' + convertValueToString(obj[prop]) + ',';
         }
+    }
+    if (endsWith(retStr, ',')){
+        retStr = retStr.slice(0, retStr.length-1);
     }
     retStr += '}';
     return retStr;

@@ -146,4 +146,7 @@ describe('JSON Printer', function () {
     it('prints simple object with string value', function (){
         expect(printer.print({eran: 'amar'})).toEqual('{"eran":"amar"}');
     });
+    it('prints object with multiple pairs', function (){
+        expect(printer.print({eran: 'amar', true:null})).toEqual('{"eran":"amar","true":null}');
+    });
 });
