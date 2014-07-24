@@ -191,7 +191,7 @@ function convertValueToString(value) {
         case 'String':
             return '"' + value + '"';
         case 'Array':
-            return '[]';
+            return '[' + value + ']';
         default :
             return String(value);
     }

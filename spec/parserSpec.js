@@ -152,5 +152,8 @@ describe('JSON Printer', function () {
     it('prints object with an empty array', function (){
         expect(printer.print({eran: []})).toEqual('{"eran":[]}');
     });
+    it('prints object with a simple array', function (){
+        expect(printer.print({eran: [1]})).toEqual('{"eran":[1]}');
+    });
 
 });
