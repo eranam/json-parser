@@ -124,5 +124,10 @@ describe('JSON Parser', function () {
             expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
         });
 
+        it('array contains single element that is an empty object', function () {
+            var obj = {'a': [{}]};
+            expect(parser.parse(JSON.stringify(obj))).toEqual(obj);
+        });
+
     });
 });

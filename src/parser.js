@@ -120,6 +120,10 @@ function isOpenArrayToken(token) {
     return token.value === SPECIAL_CHARS.openArray;
 }
 
+function isOpenObjectToken(token) {
+    return token.value === SPECIAL_CHARS.openObject;
+}
+
 function parseArray(tokenizer) {
     var retVal = [];
     if (tokenizer.isReachCloseArray()) {
@@ -140,7 +144,11 @@ function parseValue(tokenizer) {
     var token = tokenizer.extractNextToken(), retVal;
     if (isOpenArrayToken(token)) {
         retVal = parseArray(tokenizer);
-    } else {
+    }
+    else if (isOpenObjectToken(token)) {
+        retVal = parseObject(tokenizer);
+    }
+    else {
         retVal = handleStringValueOfTokenSafely(token);
     }
     return retVal;
@@ -148,7 +156,6 @@ function parseValue(tokenizer) {
 
 function parseObject(tokenizer) {
     var retObj = {};
-    assertTokens(tokenizer.extractNextToken(), SPECIAL_CHARS.openObject);
     if (tokenizer.isReachCloseObject()) {
         tokenizer.extractNextToken();
         return retObj;
@@ -157,11 +164,11 @@ function parseObject(tokenizer) {
         var keyStrWithoutQuotations = assertStringAndRemoveQuotations(tokenizer.extractNextToken().value);
         assertTokens(tokenizer.extractNextToken(), SPECIAL_CHARS.seperator);
         retObj[keyStrWithoutQuotations] = parseValue(tokenizer);
-        if (!tokenizer.isReachCloseObject()){
+        if (!tokenizer.isReachCloseObject()) {
             assertTokens(tokenizer.extractNextToken(), SPECIAL_CHARS.comma);
         }
     }
-    if(! tokenizer.getLength()){
+    if (!tokenizer.getLength()) {
         throw new Error('missing token: }');
     }
     assertTokens(tokenizer.extractNextToken(), SPECIAL_CHARS.closeObject);
@@ -170,5 +177,6 @@ function parseObject(tokenizer) {
 
 Parser.prototype.parse = function parse(str) {
     var tokenizer = new Tokenizer(str);
+    assertTokens(tokenizer.extractNextToken(), SPECIAL_CHARS.openObject);
     return parseObject(tokenizer);
 };
